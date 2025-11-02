@@ -1,55 +1,79 @@
-#include <iostream>
-#include <string.
-#include <vector>
+#include <bits/stdc++.h>
+#include "Puzzle.h"
+#include "Heuristics.h"
+#include "Solver.h"
+#include "Utilities.h"
 
 using namespace std;
 
+static Puzzle defaultPuzzle() {
+    // Default example from the prompt’s sample I/O
+    // 1 2 3
+    // 4 8 0
+    // 7 6 5
+    array<int,9> b = {1,2,3,4,8,0,7,6,5};
+    return Puzzle(b);
+}
+
+static Puzzle readCustomPuzzle() {
+    cout << "Enter your puzzle, use a zero to represent the blank\n";
+    cout << "Enter the first row, use space or tabs between numbers ";
+    int a,b,c; cin >> a >> b >> c;
+    cout << "Enter the second row, use space or tabs between numbers ";
+    int d,e,f; cin >> d >> e >> f;
+    cout << "Enter the third row, use space or tabs between numbers ";
+    int g,h,i; cin >> g >> h >> i;
+
+    array<int,9> board = {a,b,c,d,e,f,g,h,i};
+    return Puzzle(board);
+}
+
 int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-   vector<vector<int>> vecOfVec;
-   vector<int> vec;
-    int x, y, z; 
-    //intro text
-     cout << "Welcome to 862336120 8 puzzle solver." << endl;
-     cout << "Type '1' to use a default puzzle, or '2' to enter your own puzzle." << endl;
-     cout << endl;
+    cout << "Welcome to XXX 8 puzzle solver.\n";
+    cout << "Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle.\n";
 
-     //instructions for puzzle
+    int choice;
+    while (!(cin >> choice) || (choice != 1 && choice != 2)) {
+        cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Please enter 1 or 2: ";
+    }
 
-     cout << "Enter your puzzle, use a zero to represent the blank" << endl; 
+    Puzzle start = (choice == 1) ? defaultPuzzle() : readCustomPuzzle();
 
-     cout << "Enter your first row, use space or tabs between numbers" << endl;
-      cin >> x; 
-     vec.push_back(x);
-     cin >> y;
-     vec.push_back(y);
-     cin >> z;
-     vec.push_back(z);
-     vecOfVec.push_back(vec);
+    if (!Utils::isSolvable(start)) {
+        cout << "This puzzle is not solvable. Exiting.\n";
+        return 0;
+    }
 
-     cout <<  "Enter your second row, use space or tabs between numbers" << endl;
-    cin >> x; 
-     vec.at(0) = x;
-     cin >> y;
-     vec.at(1) = y;
-     cin >> z;
-     vec.at(2) = z;
-     vecOfVec.push_back(vec);
+    cout << "Enter your choice of algorithm\n";
+    cout << "1. Uniform Cost Search\n";
+    cout << "2. A* with the Misplaced Tile heuristic.\n";
+    cout << "3. A* with the Euclidean distance heuristic.\n";
 
-     cout << "Enter your third row, use space or tabs between numbers" << endl;
-     cin >> x; 
-     vec.at(0) = x;
-     cin >> y;
-     vec.at(1) = y;
-     cin >> z;
-     vec.at(2) = z;
-     vecOfVec.push_back(vec);
+    int algo;
+    while (!(cin >> algo) || (algo < 1 || algo > 3)) {
+        cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Please enter 1, 2, or 3: ";
+    }
 
-     cout << "Enter your choice of algorithm" << endl;
+    Solver solver(start);
 
-     cout << "Uniform Cost Search (type A)" << endl;
-     cout << "A* with the Misplaced Tile heuristic (type B)" << endl;
-     cout <<"A* with the Euclidean distance heuristic (type C)" << endl;
+    switch (algo) {
+        case 1:
+            solver.uniformCostSearch();
+            break;
+        case 2:
+            solver.aStarMisplaced();
+            break;
+        case 3:
+            solver.aStarEuclidean();
+            break;
+        default:
+            break;
+    }
 
     return 0;
 }
